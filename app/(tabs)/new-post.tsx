@@ -1,16 +1,18 @@
-import { ScrollView, Text, View, TouchableWithoutFeedback, TouchableOpacity, StyleSheet, Pressable, Keyboard } from "react-native"
+import { 
+    Keyboard,
+    Pressable,
+    ScrollView, 
+    StyleSheet,
+    Text, 
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View } from "react-native"
 import { useState, useEffect } from 'react';
-//import BottomSheet from "@gorhom/bottom-sheet"
-import * as ImagePicker from 'react-native-image-picker';
-import RNPickerSelect from 'react-native-picker-select'
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler'
+import { launchImageLibrary } from 'react-native-image-picker'
+import RNPickerSelect from 'react-native-picker-select';
 import * as Location from 'react-native-geolocation-service'
 import MapView, { Marker } from 'react-native-maps'
-//import Constants from 'expo-constants' // for app bundle id REMOVE for production
-//import { initializeApp } from 'firebase/app/'
-//import { navigate } from 'expo-router/build/global-state/routing';
-//import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-
 
 import ImageViewer from "../../components/ImageViewer";
 import { useNavigation } from "@react-navigation/native";
@@ -26,19 +28,22 @@ export default function NewPost() {
     //const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
     const pickImageAsync = async () => {
-        // console.log("Bundle ID: ", bundleId) REMOVE for production
-        let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ['images'],
-          allowsEditing: true,
-          quality: 1,
+        const options = {
+            mediaType: 'photo',
+            includeBase64: false,
+            quality: 1,
+        };
+
+        launchImageLibrary(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image selection')
+            } else if (response.errorMessage) {
+                console.log('Image selection error: ', response.errorMessage)
+            } else if (response.assets && response.assets.length > 0) {
+                console.log('Image selected: ', response.assets[0].uri)
+                setSelectedImage(response.assets[0].uri)
+            }
         });
-    
-        if (!result.canceled) {
-          console.log(result)
-          setSelectedImage(result.assets[0].uri);
-        } else {
-          // alert("No image selected.")
-        }
     };
 
     useEffect(() => {
@@ -51,7 +56,6 @@ export default function NewPost() {
                 // ... do we make this a big deal?
                 // user could manually specify location
             }
-
             
             let location = await Location.getCurrentPositionAsync({});
             setLocation(location)
@@ -128,10 +132,6 @@ export default function NewPost() {
                     placeholderTextColor={'grey'}
                 />
                 <Text style={styles.label}>Category</Text>
-                <View style={{ 
-                    marginVertical: 0,
-                    paddingLeft: 6,
-                    width: '100%' }}>
                 <RNPickerSelect
                     onValueChange={(value) => setSelectedValue(value)}
                     
@@ -173,7 +173,6 @@ export default function NewPost() {
                     }}
                     
                 />
-                </View>
                 <Text style={styles.label}>Location - Coming Soon!</Text>
                 {location && 
                     <Pressable onPress={ openMapScreen }>
@@ -216,7 +215,7 @@ const styles = StyleSheet.create({
     scrollContainer: {
         //flexGrow: 1,
         padding: 0,
-        paddingBottom: 85 // dubious
+        paddingBottom: 60 // dubious
     },
     container: {
       //flex: 1,
@@ -311,8 +310,17 @@ const styles = StyleSheet.create({
 })
 
 const pickerSelectStyles = StyleSheet.create({
-    inputIOS: { // TODO modify to suit HippieChristmas
-        
+    inputIOS: {
+        height: 50,
+        width: '55%',
+        backgroundColor: '#f2f2f2',
+        borderRadius: 8,
+        borderColor: "#f2350f",
+        borderWidth: 3,
+        paddingLeft: 10,
+        paddingVertical: 12,
+        fontSize: 20,
+        marginBottom: 8,
     },
     placeholder: {
         color: '#000',

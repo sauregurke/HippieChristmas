@@ -1,21 +1,21 @@
-import { StyleSheet, Image, ImageSource } from 'react-native';
+import { StyleSheet, Image, ImageSourcePropType } from 'react-native';
 //import { Image, type ImageSource } from 'expo-image';
 
 type Props = {
-    imgSource: ImageSource; //seems redundant. but type defines the *shape* of something
+    imgSource: { uri: string } | string; 
     selectedImage?: string;
-    // this is typescript btw
-}
-
-export default function ImageViewer({ imgSource, selectedImage }: Props) {
-    const imageSource = selectedImage ? { uri: selectedImage } : imgSource;
-    
-    return <Image source={imgSource} style={styles.image} />;
-}
+  };
+  
+  export default function ImageViewer({ imgSource }: Props) {
+    // handle the case of either string or object for imgSource
+    const imageSource = typeof imgSource === 'string' ? { uri: imgSource } : imgSource;
+    return <Image source={imageSource} style={styles.image} />;
+  }
 
 const styles = StyleSheet.create({
     image: {
-        width: '100%',
+        width: '80%',
+        //width: 250,
         height: 250,
         borderRadius: 10,
     }
