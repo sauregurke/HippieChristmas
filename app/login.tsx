@@ -1,55 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Button, Alert } from 'react-native';
-import auth from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
+
+const navigation = useNavigation();
 
 const LoginScreen = () => {
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    GoogleSignin.configure({
-      webClientId: 'YOUR_WEB_CLIENT_ID',
-    });
-
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // Unsubscribe on unmount
-  }, []);
-
-  const onAuthStateChanged = (user) => {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  };
-
   const handleGoogleSignIn = async () => {
     try {
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+
+      // Get the users ID token
       const { idToken } = await GoogleSignin.signIn();
+
+      // Create a Google credential with the token
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+      // Sign-in the user with the credential
       await auth().signInWithCredential(googleCredential);
+
+      // User is now signed in
+      console.log('Google sign-in successful');
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'AppTabs'}],
+      })
     } catch (error) {
-      Alert.alert('Google Sign-in Error', error.message);
+      console.error('Google sign-in error:', error);
+      //Alert.alert('Sign-in Error', error.message);
     }
   };
-
-  const handleSignOut = async () => {
-    try {
-      await GoogleSignin.signOut();
-      await auth().signOut();
-    } catch (error) {
-      Alert.alert('Sign-out Error', error.message);
-    }
-  };
-
-  if (initializing) return null;
 
   return (
     <View>
-      {user ? (
-        <Button title="Sign Out" onPress={handleSignOut} />
-      ) : (
-        <Button title="Sign in with Google" onPress={handleGoogleSignIn} />
-      )}
+      <Button title="Sign in with Google" onPress={handleGoogleSignIn} />
     </View>
   );
 };
