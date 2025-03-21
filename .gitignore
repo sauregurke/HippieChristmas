@@ -41,6 +41,7 @@ node_modules/
 npm-debug.log
 yarn-error.log
 ios/GoogleService-Info.plist
+App.reference
 
 # fastlane
 #
@@ -60,7 +61,8 @@ ios/GoogleService-Info.plist
 # Ruby / CocoaPods
 **/Pods/
 /vendor/bundle/
-
+/ios/PodfileBackup
+/ios/Podfilelocationbackup
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
 

@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { View, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 
 import { Text, PlatformPressable } from '@react-navigation/elements';
 import { useLinkBuilder, useTheme } from '@react-navigation/native';
@@ -17,9 +18,27 @@ import NewPost from './app/(tabs)/new-post'
 import MyPosts from './app/(tabs)/my-posts'
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions'
 
-function MyTabBar({ state, descriptors, navigation }) {
-  const { colors } = useTheme();
+//function check(permission: Permission): Promise<PermissionStatus>;
+
+/*
+
+request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((status) => {
+
+})
+
+check(PERMISSIONS.IOS.LOCATION_WH:EN_IN_USE).then((status) => {
+  switch(status) {
+    case RESULTS.DENIED:
+      return console.log('Location services denied.')
+  }
+});
+*/
+
+
+
+function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps ) {
   const { buildHref } = useLinkBuilder();
 
   return (
@@ -27,7 +46,7 @@ function MyTabBar({ state, descriptors, navigation }) {
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
-        options.tabBarLabel !== undefined
+        typeof options.tabBarLabel === 'string'
           ? options.tabBarLabel
           : options.title !== undefined
             ? options.title
@@ -65,7 +84,7 @@ function MyTabBar({ state, descriptors, navigation }) {
             onLongPress={onLongPress}
             style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
           >
-            {options.tabBarIcon && options.tabBarIcon({ focused: isFocused })}
+            {options.tabBarIcon && options.tabBarIcon({ focused: isFocused, color: '#f2350f', size: 30 })}
             <Text style={{ color: isFocused ? '#f2350f' : '#f2350f' }}>
             {label}
             </Text>
@@ -91,10 +110,12 @@ const Tabs = createBottomTabNavigator({
 
 //}
 
+
 export default function App() {
   
 
   return (
+    <GestureHandlerRootView>
     <NavigationContainer>
       <Tabs.Navigator
         tabBar={(props) => <MyTabBar {...props} />}
@@ -103,9 +124,9 @@ export default function App() {
             backgroundColor: '#f2350f',   // title bar color
           },
           headerTitleStyle: { 
-            color: Colors.white,          // title text color
+            color: '#FFFFFF',          // title text color
             fontWeight: 'bold',
-            fontSize: '20'
+            fontSize: 20
           }, 
         }}>
         <Tabs.Screen
@@ -155,5 +176,6 @@ export default function App() {
         />
       </Tabs.Navigator>
     </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }

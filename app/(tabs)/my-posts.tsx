@@ -1,9 +1,9 @@
 import { View, FlatList, Image, Text, StyleSheet, TouchableOpacity } from "react-native"
 import React, { useState } from "react"
-import { GestureHandlerRootView } from "react-native-gesture-handler"
-import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable"
-import { Ionicons } from "react-native-vector-icons/Ionicons"
-import { dummyPosts } from "../../dummyData.js"
+import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler"
+//import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable"
+import Ionicons from "react-native-vector-icons/Ionicons"
+import { dummyPosts } from "../../components/dummyData.js"
 
 export default function MyPosts() {
     const [posts, setPosts] = useState(dummyPosts)
@@ -16,6 +16,7 @@ export default function MyPosts() {
         image: string;
         location: string;
     }
+
 
     //const renderItem = ({item: Item}) => {
     //    <TouchableOpacity style={styles.itemContainer}>
@@ -47,7 +48,7 @@ export default function MyPosts() {
                     data={posts}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
-                        <Swipeable renderRightActions={() => renderDeleteAction(item.id)}>
+                        
                             <View style={styles.itemContainer}>
                                 <View style={styles.itemBox}>
                                     <Image source={{ uri: item.image }} style={styles.image} />
@@ -56,8 +57,8 @@ export default function MyPosts() {
                                     </View>
                                 </View>
                             </View>
-                            
-                        </Swipeable>
+                          
+                        
                     )}
                     style={styles.list}
                     />
@@ -67,6 +68,8 @@ export default function MyPosts() {
 }
 
 const styles = StyleSheet.create({
+    //<Swipeable renderRightActions={() => renderDeleteAction(item.id)}>
+    //</Swipeable> 
     list: {
         flex: 1,
         padding: 10,

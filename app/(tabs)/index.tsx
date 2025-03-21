@@ -1,6 +1,6 @@
 //import { useNavigation } from "@react-navigation/native"
 import { View, FlatList, Image, Text, StyleSheet } from "react-native"
-import { dummyPosts } from '../../dummyData'
+import { dummyPosts } from '../../components/dummyData'
 //import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 export default function Index() {

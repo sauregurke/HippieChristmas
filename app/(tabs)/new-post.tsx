@@ -1,17 +1,19 @@
-import { 
+import {
     Keyboard,
     Pressable,
-    ScrollView, 
+    ScrollView,
     StyleSheet,
-    Text, 
+    Text,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    View } from "react-native"
+    View
+} from "react-native"
 import { useState, useEffect } from 'react';
 import { GestureHandlerRootView, TextInput } from 'react-native-gesture-handler'
-import { launchImageLibrary } from 'react-native-image-picker'
-import RNPickerSelect from 'react-native-picker-select';
-import * as Location from 'react-native-geolocation-service'
+import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker'
+//import RNPickerSelect from 'react-native-picker-select';
+import { Picker } from '@react-native-picker/picker'
+import GetLocation, { Location } from 'react-native-get-location'
 import MapView, { Marker } from 'react-native-maps'
 
 import ImageViewer from "../../components/ImageViewer";
@@ -24,14 +26,24 @@ export default function NewPost() {
     const [itemTitle, setItemTitle] = useState('')
     const [itemDescription, setItemDescription] = useState('')
     const [selectedValue, setSelectedValue] = useState(null) // might be the cause of log warnings on startup
-    const [location, setLocation] = useState<Location.LocationObject | null>(null)
-    //const [errorMsg, setErrorMsg] = useState<string | null>(null)
+    const [location, setLocation] = useState<Location | null>(null)
+
+    GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 60000,
+      })
+      .then(location => {
+        setLocation(location)
+      })
+      console.log(location)
 
     const pickImageAsync = async () => {
-        const options = {
+        const options: ImageLibraryOptions = {
             mediaType: 'photo',
+            maxHeight: 1200,
             includeBase64: false,
             quality: 1,
+            selectionLimit:1, // look into making this larger
         };
 
         launchImageLibrary(options, (response) => {
@@ -46,29 +58,8 @@ export default function NewPost() {
         });
     };
 
-    useEffect(() => {
-        async function getCurrentLocation() {
-
-            console.log("grabbing location")
-
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                // ... do we make this a big deal?
-                // user could manually specify location
-            }
-            
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation(location)
-        }
-
-        // add timer to stop infinitely checking location, then uncomment this next line
-        //getCurrentLocation()
-
-        const interval = setInterval(getCurrentLocation, 900000)
-        return () => clearInterval(interval)
-    })
-
     const navigation = useNavigation()
+
 
     const openMapScreen = () => {
         console.log("Map screen triggered")
@@ -101,114 +92,89 @@ export default function NewPost() {
     //}
 
     return (
-        
+
         <GestureHandlerRootView style={styles.globalContainer}>
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        
-        <View style={styles.globalContainer}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <Pressable onPress={pickImageAsync}>
-                <View style={styles.imageContainer}>
-                    <ImageViewer imgSource={selectedImage || DefaultImage}/>
-                </View>
-            </Pressable>
-            <View style={styles.container}>
-                <View style={styles.textContainer}>
-                <Text style={styles.label}>Title</Text>
-                <TextInput // item title
-                    style={styles.titleTextBox}
-                    onChangeText={setItemTitle}
-                    value={itemTitle}
-                    placeholder="Give us a name 🇦🇺" 
-                    placeholderTextColor={'grey'}
-                />
-                <Text style={styles.label}>Description</Text>
-                <TextInput // item title
-                    style={styles.textBox}
-                    onChangeText={setItemDescription}
-                    value={itemDescription}
-                    multiline={true}
-                    placeholder="Tell us about it!" 
-                    placeholderTextColor={'grey'}
-                />
-                <Text style={styles.label}>Category</Text>
-                <RNPickerSelect
-                    onValueChange={(value) => setSelectedValue(value)}
-                    
-                    //selectedValue={setSelectedValue},
-                    value = {selectedValue}
-                    items={[
-                        { label: 'Furniture', value: 'furniture' },
-                        { label: 'Electronics', value: 'electronics' },
-                        { label: 'Appliances', value: 'appliances' },
-                        { label: 'ExpandThis', value: 'expandthis' },
-                    ]}
-                    style={{
-                        ...pickerSelectStyles,
-                        inputIOS: {
-                            ...pickerSelectStyles.inputIOS,
-                            height: 50,
-                            width: '55%',
-                            // Touch zone is anchored to the left of the box. Investigate.
-                            backgroundColor: '#f2f2f2',
-                            borderRadius: 8,
-                            borderColor: "#f2350f",
-                            borderWidth: 3,
-                            paddingLeft: 10,              // text inside box
-                            paddingVertical: 12,
-                            //paddingHorizontal: 12,
-                            fontSize: 20,
-                            // color: 'grey'
-                            marginBottom: 8,
-                        },
-                        iconContainer: {
-                            top: 12,
-                            right: 16,
-                    }}}
-                    
-                    placeholder={{
-                        label: 'Select a category...',
-                        color: 'grey'
-                        //value: 'ExpandThis',
-                    }}
-                    
-                />
-                <Text style={styles.label}>Location - Coming Soon!</Text>
-                {location && 
-                    <Pressable onPress={ openMapScreen }>
-                        <View style={styles.mapPreviewContainer}>
-                            <MapView
-                                style={styles.mapPreview}
-                                initialRegion={{
-                                    latitude: location.coords.latitude,
-                                    longitude: location.coords.longitude,
-                                    latitudeDelta: 0.0922,
-                                    longitudeDelta: 0.0421,
-                                }}
-                                >
-                                    <Marker coordinate={location.coords} />
-                                </MapView>
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+
+                <View style={styles.globalContainer}>
+                    <ScrollView contentContainerStyle={styles.scrollContainer}>
+                        <Pressable onPress={pickImageAsync}>
+                            <View style={styles.imageContainer}>
+                                <ImageViewer imgSource={selectedImage || DefaultImage} />
+                            </View>
+                        </Pressable>
+                        <View style={styles.container}>
+                            <View style={styles.textContainer}>
+
+                                <Text style={styles.label}>Title</Text>
+                                <TextInput // item title
+                                    style={styles.titleTextBox}
+                                    onChangeText={setItemTitle}
+                                    value={itemTitle}
+                                    placeholder="Give us a name"
+                                    placeholderTextColor={'grey'}
+                                />
+
+                                <Text style={styles.label}>Description</Text>
+                                <TextInput
+                                    style={styles.textBox}
+                                    onChangeText={setItemDescription}
+                                    value={itemDescription}
+                                    multiline={true}
+                                    placeholder="Tell us about it!"
+                                    placeholderTextColor={'grey'}
+                                />
+
+                                <Text style={styles.label}>Category</Text>
+                                <View style={styles.width}>
+                                <Picker
+                                    style = { styles.picker }
+                                    selectedValue={selectedValue}
+                                    onValueChange={(itemValue) =>
+                                        setSelectedValue(itemValue)}>
+                                    <Picker.Item label="Furniture" value="furniture" />
+                                    <Picker.Item label="Appliances" value="appliances" />
+                                    <Picker.Item label="Electronics" value="electronics" />
+                                    <Picker.Item label="Miscellaneous" value="miscellaneous" />
+                                </Picker>
+                                </View>
+                                <Text style={styles.label}>Location</Text>
+                                <Pressable style={styles.mapPreviewContainer}>
+                                    <MapView
+                                        style={styles.mapPreview}
+                                        initialRegion={{
+                                            latitude: location?.latitude ?? 43.0722,
+                                            longitude: location?.longitude ?? -89.4008,
+                                            latitudeDelta: 0.0922,
+                                            longitudeDelta: 0.0421,
+                                        }}>
+                                           
+
+                                    </MapView>
+                                </Pressable>
+                                
+                            </View>
                         </View>
-                    </Pressable>
-                }
+                    </ScrollView>
+                    <View style={styles.postButtonView}>
+                        <TouchableOpacity style={styles.postButton} onPress={postItem}>
+
+                            <Text style={styles.postButtonText}>Share</Text>
+
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-            </ScrollView>
-            <View style={styles.postButtonView}>
-            <TouchableOpacity style={styles.postButton} onPress={postItem}>
-                
-                    <Text style={styles.postButtonText}>Share</Text>
-                
-            </TouchableOpacity>
-            </View>
-        </View>
-        </TouchableWithoutFeedback>
+
+            </TouchableWithoutFeedback>
         </GestureHandlerRootView>
     )
 
 }
 
 const styles = StyleSheet.create({
+    width: {
+        width: '100%',
+    },
     globalContainer: {
         // flex: 1,
     },
@@ -218,13 +184,13 @@ const styles = StyleSheet.create({
         paddingBottom: 60 // dubious
     },
     container: {
-      //flex: 1,
-      //justifyContent: 'flex-start',
-      flexDirection: 'column',
-      backgroundColor: '#f2f2f2', // orig #f2500f
-      //alignItems: 'center',
-      paddingLeft: 12,
-      padding: 0,
+        //flex: 1,
+        //justifyContent: 'flex-start',
+        flexDirection: 'column',
+        backgroundColor: '#f2f2f2', // orig #f2500f
+        //alignItems: 'center',
+        paddingLeft: 12,
+        padding: 0,
     },
     imageContainer: {
         //flex: 1,
@@ -250,51 +216,57 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     image: {
-      width: 300,
-      height: 400,
-      borderRadius: 20
+        width: 300,
+        height: 400,
+        borderRadius: 20
     },
     label: {
-        fontSize: 26, 
-        fontWeight: 'bold', 
+        fontSize: 26,
+        fontWeight: 'bold',
         //marginBottom: 8,
         marginLeft: 0,
         color: '#F2350F',
         paddingBottom: 3
     },
     titleTextBox: {
-        height: 40, 
-        width: '75%', 
+        height: 40,
+        width: '75%',
         borderColor: '#F2350F',  // original #ccc
-        borderWidth: 3, 
+        borderWidth: 3,
         borderRadius: 8, // rounded corners
         paddingLeft: 6,  // padding inside the box
         marginBottom: 10,
         marginLeft: 6,
         fontSize: 20,
-        
+
     },
     textBox: {
         height: 30,
-        width: '98%',  
-        borderColor: '#F2350F', 
-        borderWidth: 3,  
-        borderRadius: 8, 
+        width: '98%',
+        borderColor: '#F2350F',
+        borderWidth: 3,
+        borderRadius: 8,
         minHeight: 55,
-        paddingLeft: 6,  
+        paddingLeft: 6,
         paddingTop: 7,
         marginBottom: 8,
         marginLeft: 6,
         fontSize: 20
     },
+    picker: {
+        //height: 100,
+        //borderWidth: 3,
+        //borderColor: '#F2350F',
+    },
     postButtonView: {
         alignItems: 'center',
         justifyContent: 'center',
-        paddingTop: 5,
+        paddingTop: 0,
         backgroundColor: 'transparent'
     },
     postButton: {
-        //position: 'absolute',
+        position: 'absolute',
+        bottom: 10, 
         backgroundColor: '#f2350f',
         width: '95%',
         height: 70,
@@ -307,23 +279,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 24
     }
-})
-
-const pickerSelectStyles = StyleSheet.create({
-    inputIOS: {
-        height: 50,
-        width: '55%',
-        backgroundColor: '#f2f2f2',
-        borderRadius: 8,
-        borderColor: "#f2350f",
-        borderWidth: 3,
-        paddingLeft: 10,
-        paddingVertical: 12,
-        fontSize: 20,
-        marginBottom: 8,
-    },
-    placeholder: {
-        color: '#000',
-    },
-    // add android here
 })
