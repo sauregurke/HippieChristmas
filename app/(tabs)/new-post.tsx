@@ -27,16 +27,27 @@ export default function NewPost() {
     const [itemDescription, setItemDescription] = useState('')
     const [selectedValue, setSelectedValue] = useState(null) // might be the cause of log warnings on startup
     const [location, setLocation] = useState<Location | null>(null)
+    const [loading, setLoading] = useState(false)
 
-    GetLocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 60000,
-      })
-      .then(location => {
-        setLocation(location)
-      })
-      console.log(location)
+    // I genuinely cannot figure out why this module CONSTANTLY pulls location,
+    // pulling 25 watts from my computer in the simulator.
 
+    /*
+    useEffect(() => {
+        GetLocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 60000,
+          })
+          .then(location => {
+            setLoading(false)
+            setLocation(location)
+          })
+          console.log(location)
+    
+          setLoading(false)
+    })
+          */
+      
     const pickImageAsync = async () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
@@ -184,16 +195,12 @@ const styles = StyleSheet.create({
         paddingBottom: 60 // dubious
     },
     container: {
-        //flex: 1,
-        //justifyContent: 'flex-start',
         flexDirection: 'column',
         backgroundColor: '#f2f2f2', // orig #f2500f
-        //alignItems: 'center',
         paddingLeft: 12,
         padding: 0,
     },
     imageContainer: {
-        //flex: 1,
         alignItems: 'center',
         padding: 10,
     },
@@ -223,7 +230,6 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 26,
         fontWeight: 'bold',
-        //marginBottom: 8,
         marginLeft: 0,
         color: '#F2350F',
         paddingBottom: 3

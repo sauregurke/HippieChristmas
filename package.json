@@ -10,9 +10,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@react-native-firebase/app": "^21.12.0",
-    "@react-native-firebase/auth": "^21.12.0",
-    "@react-native-google-signin/google-signin": "^13.2.0",
     "@react-native-picker/picker": "^2.11.0",
     "@react-navigation/bottom-tabs": "^7.2.1",
     "@react-navigation/elements": "^2.2.6",
@@ -36,7 +33,7 @@
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
-    "@react-native-community/cli": "15.0.1",
+    "@react-native-community/cli": "^15.0.1",
     "@react-native-community/cli-platform-android": "15.0.1",
     "@react-native-community/cli-platform-ios": "15.0.1",
     "@react-native/babel-preset": "0.78.0",

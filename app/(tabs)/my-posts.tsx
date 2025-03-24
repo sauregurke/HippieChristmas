@@ -17,7 +17,7 @@ export default function MyPosts() {
         location: string;
     }
 
-
+    // To be reimplemented once auth is done
     //const renderItem = ({item: Item}) => {
     //    <TouchableOpacity style={styles.itemContainer}>
      //       <Image source={{ uri: item.image }} style={styles.image} />
@@ -29,6 +29,7 @@ export default function MyPosts() {
         setPosts(posts.filter((item) => item.id !== id))
     }
 
+    // To be reimplemented once auth is done
     const renderDeleteAction = (id: string) => (
         <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(id)}>
             <View style={styles.deleteButton}>
@@ -57,7 +58,6 @@ export default function MyPosts() {
                                     </View>
                                 </View>
                             </View>
-                          
                         
                     )}
                     style={styles.list}
@@ -68,8 +68,6 @@ export default function MyPosts() {
 }
 
 const styles = StyleSheet.create({
-    //<Swipeable renderRightActions={() => renderDeleteAction(item.id)}>
-    //</Swipeable> 
     list: {
         flex: 1,
         padding: 10,
@@ -80,7 +78,6 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        //padding: 10,
       },
     itemContainer: {
         flex: 1,
@@ -89,11 +86,8 @@ const styles = StyleSheet.create({
         padding: 1,
         marginBottom: 10,
         backgroundColor: "#f2f2f2",
-        //height: '100%',
-        //marginBottom: 10,
     },
     itemBox: {
-        //flex: 1,
         width: '100%',
         flexDirection: 'row',
         backgroundColor: "#f2f2f2",
@@ -116,7 +110,7 @@ const styles = StyleSheet.create({
         width: 70,
         height: 70,
         borderRadius: 8, 
-        resizeMode: "cover" // what
+        resizeMode: "cover"
     },
     title: {
         flexDirection: 'row',

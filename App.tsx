@@ -1,5 +1,3 @@
-// In App.js in a new project
-
 import * as React from 'react';
 import { View, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,34 +7,10 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { Text, PlatformPressable } from '@react-navigation/elements';
 import { useLinkBuilder, useTheme } from '@react-navigation/native';
 
-// Authentication
-//import auth from '@react-native-firebase/auth'
-
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import Index from './app/(tabs)/index'
 import NewPost from './app/(tabs)/new-post'
 import MyPosts from './app/(tabs)/my-posts'
-import { Colors } from 'react-native/Libraries/NewAppScreen';
-
-import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions'
-
-//function check(permission: Permission): Promise<PermissionStatus>;
-
-/*
-
-request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((status) => {
-
-})
-
-check(PERMISSIONS.IOS.LOCATION_WH:EN_IN_USE).then((status) => {
-  switch(status) {
-    case RESULTS.DENIED:
-      return console.log('Location services denied.')
-  }
-});
-*/
-
-
 
 function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps ) {
   const { buildHref } = useLinkBuilder();
