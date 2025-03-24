@@ -16,6 +16,8 @@ import { Picker } from '@react-native-picker/picker'
 import GetLocation, { Location } from 'react-native-get-location'
 import MapView, { Marker } from 'react-native-maps'
 
+import Ionicons from 'react-native-vector-icons/Ionicons'
+
 import ImageViewer from "../../components/ImageViewer";
 import { useNavigation } from "@react-navigation/native";
 
@@ -28,12 +30,11 @@ export default function NewPost() {
     const [itemTitle, setItemTitle] = useState('')
     const [itemDescription, setItemDescription] = useState('')
     const [selectedValue, setSelectedValue] = useState(null) // might be the cause of log warnings on startup
+
+    // Madison, WI - Birthplace of HC
+    const defaultLatitude = 43.0722
+    const defaultLongitude = -89.4008
     
-
-    // I genuinely cannot figure out why this module CONSTANTLY pulls location,
-    // pulling 25 watts from my computer in the simulator.
-
-    /*
     useEffect(() => {
         GetLocation.getCurrentPosition({
             enableHighAccuracy: true,
@@ -47,7 +48,7 @@ export default function NewPost() {
     
           setLoading(false)
     })
-          */
+          
       
     const pickImageAsync = async () => {
         const options: ImageLibraryOptions = {
@@ -55,7 +56,7 @@ export default function NewPost() {
             maxHeight: 1200,
             includeBase64: false,
             quality: 1,
-            selectionLimit:1, // look into making this larger
+            selectionLimit: 1, // look into adding more photos
         };
 
         launchImageLibrary(options, (response) => {
@@ -115,8 +116,6 @@ export default function NewPost() {
 
         <GestureHandlerRootView style={styles.globalContainer}>
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-
-                <View style={styles.globalContainer}>
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
                         <Pressable onPress={pickImageAsync}>
                             <View style={styles.imageContainer}>
@@ -163,27 +162,32 @@ export default function NewPost() {
                                     <MapView
                                         style={styles.mapPreview}
                                         initialRegion={{
-                                            latitude: location?.latitude ?? 43.0722,
-                                            longitude: location?.longitude ?? -89.4008,
-                                            latitudeDelta: 0.0922,
-                                            longitudeDelta: 0.0421,
+                                            latitude: location?.latitude ?? defaultLatitude,
+                                            longitude: location?.longitude ?? defaultLongitude,
+                                            latitudeDelta: 0.01,
+                                            longitudeDelta: 0.01,
                                         }}>
-                                           
-
+                                        <Marker
+                                            coordinate={{
+                                                latitude: location?.latitude ?? defaultLatitude,
+                                                longitude: location?.longitude ?? defaultLongitude,
+                                            }}>
+                                                <Ionicons name="pin" size={30} color='#f2350f'/>
+                                        </Marker>
                                     </MapView>
                                 </Pressable>
                                 
                             </View>
                         </View>
-                    </ScrollView>
-                    <View style={styles.postButtonView}>
+                        <View style={styles.postButtonView}>
                         <TouchableOpacity style={styles.postButton} onPress={postItem}>
 
                             <Text style={styles.postButtonText}>Share</Text>
 
                         </TouchableOpacity>
                     </View>
-                </View>
+                    </ScrollView>
+
 
             </TouchableWithoutFeedback>
         </GestureHandlerRootView>
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
     scrollContainer: {
         //flexGrow: 1,
         padding: 0,
-        paddingBottom: 60 // dubious
+        //paddingBottom: 60 // dubious
     },
     container: {
         flexDirection: 'column',
@@ -274,14 +278,14 @@ const styles = StyleSheet.create({
         //borderColor: '#F2350F',
     },
     postButtonView: {
+        marginTop: 40, // dubious
         alignItems: 'center',
-        justifyContent: 'center',
-        paddingTop: 0,
+        justifyContent: 'flex-end', // move to bottom of scroll view
         backgroundColor: 'transparent'
     },
     postButton: {
-        position: 'absolute',
-        bottom: 10, 
+        //position: 'absolute',
+        //bottom: 10, 
         backgroundColor: '#f2350f',
         width: '95%',
         height: 70,

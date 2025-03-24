@@ -1,7 +1,7 @@
-import { View, FlatList, Image, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native"
+import { SwipeListView } from 'react-native-swipe-list-view'
 import React, { useState } from "react"
-import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler"
-//import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import { dummyPosts } from "../../components/dummyData.js"
 
@@ -17,21 +17,13 @@ export default function MyPosts() {
         location: string;
     }
 
-    // To be reimplemented once auth is done
-    //const renderItem = ({item: Item}) => {
-    //    <TouchableOpacity style={styles.itemContainer}>
-     //       <Image source={{ uri: item.image }} style={styles.image} />
-    //        <View style={styles.title}>{ Item.title }</View>
-    //    </TouchableOpacity>
-    //}
-
-    const handleDelete = (id: string) => {
-        setPosts(posts.filter((item) => item.id !== id))
+    // Implement once Firebase integration is complete
+    const handleDelete = (item: Item) => {
+        setPosts(posts.filter((post) => post.id !== item.id))
     }
 
-    // To be reimplemented once auth is done
-    const renderDeleteAction = (id: string) => (
-        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(id)}>
+    const renderDeleteAction = ({ item }: { item: any }) => (
+        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item)}>
             <View style={styles.deleteButton}>
                 <Ionicons
                     name="trash-bin"
@@ -42,27 +34,28 @@ export default function MyPosts() {
         </TouchableOpacity>
     )
 
+    const renderItem = ({ item }: { item: any }) => (
+        <View style={styles.itemContainer}>
+        <View style={styles.itemBox}>
+            <Image source={{ uri: item.image }} style={styles.image} />
+            <View style={styles.textContainer}>
+                <Text style={styles.title}>{item.title}</Text>
+            </View>
+        </View>
+        </View>
+    );
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}> 
-            <View style={styles.itemContainer}>
-                <FlatList
-                    data={posts}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        
-                            <View style={styles.itemContainer}>
-                                <View style={styles.itemBox}>
-                                    <Image source={{ uri: item.image }} style={styles.image} />
-                                    <View style={styles.textContainer}>
-                                        <Text style={styles.title}>{item.title}</Text>
-                                    </View>
-                                </View>
-                            </View>
-                        
-                    )}
-                    style={styles.list}
-                    />
-            </View>
+            <SwipeListView
+                data={posts}
+                keyExtractor={(item) => item.id}
+                renderItem={renderItem}
+                renderHiddenItem={ renderDeleteAction }
+                rightOpenValue={ -65 }
+                disableRightSwipe
+                style={styles.list}
+                />
         </GestureHandlerRootView>
     )
 }
@@ -90,21 +83,22 @@ const styles = StyleSheet.create({
     itemBox: {
         width: '100%',
         flexDirection: 'row',
-        backgroundColor: "#f2f2f2",
-        borderRadius: 12, // adjust this
-        borderWidth: 3,
+        backgroundColor: '#ffffff',
+        borderRadius: 14, // adjust this
+        borderWidth: 2,
         borderColor: '#f2350f',
         padding: 10
 
     },
     deleteButton: {
+        flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'flex-end',
     },
     textContainer: {
         flex: 1,
         alignItems: 'flex-start',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     image: {
         width: 70,

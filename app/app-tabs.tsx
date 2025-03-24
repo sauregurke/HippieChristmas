@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { Text, PlatformPressable } from '@react-navigation/elements';
@@ -15,7 +14,7 @@ function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps ) {
     const { buildHref } = useLinkBuilder();
   
     return (
-      <View style={{ flexDirection: 'row', height: 80 }}>
+      <View style={{ flexDirection: 'row', height: 80, backgroundColor: '#FFFFFF' }}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const label =
@@ -68,13 +67,18 @@ function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps ) {
     );
   }
   
-  const Tabs = createBottomTabNavigator();
+  const Tabs = createBottomTabNavigator({
+    screens: {
+        Home: Index,
+        NewPost: NewPost,
+        MyPosts: MyPosts,
+      }
+  });
   
   export default function AppTabs() {
   
     return (
       <GestureHandlerRootView>
-      <NavigationContainer>
         <Tabs.Navigator
           tabBar={(props) => <MyTabBar {...props} />}
           screenOptions={{
@@ -133,7 +137,6 @@ function MyTabBar({ state, descriptors, navigation }: BottomTabBarProps ) {
             }}
           />
         </Tabs.Navigator>
-      </NavigationContainer>
       </GestureHandlerRootView>
     );
   }
