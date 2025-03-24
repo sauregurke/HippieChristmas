@@ -22,12 +22,13 @@ import { useNavigation } from "@react-navigation/native";
 const DefaultImage = require('../../assets/images/icon.png') // TODO create image placeholder
 
 export default function NewPost() {
+    const [location, setLocation] = useState<Location | null>(null)
+    const [loading, setLoading] = useState(false)
     const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
     const [itemTitle, setItemTitle] = useState('')
     const [itemDescription, setItemDescription] = useState('')
     const [selectedValue, setSelectedValue] = useState(null) // might be the cause of log warnings on startup
-    const [location, setLocation] = useState<Location | null>(null)
-    const [loading, setLoading] = useState(false)
+    
 
     // I genuinely cannot figure out why this module CONSTANTLY pulls location,
     // pulling 25 watts from my computer in the simulator.
@@ -73,34 +74,42 @@ export default function NewPost() {
 
 
     const openMapScreen = () => {
+        // TODO implement with Pressable overlay on map screen
         console.log("Map screen triggered")
-        // come back to this
         //navigation.navigate('FullMap', { initialisedLocation: location })
     }
 
     const postItem = () => {
         console.log("attempting to post item")
     }
-    //const uploadImage = async (selectedImage, userId) => {
-    //    if (!selectedImage) return null
 
-    //    try {
-    //        const filename = 'images/${userId}/${Date.now()}.jpg'
-    //        const reference = storage().ref(filename)
+    const uploadImage = async (selectedImage: string | undefined, userId: string) => {
+        if (!selectedImage) return null
 
-    //        await reference.putFile(selectedImage)
-    //        const url = await reference.getDownloadURL()
-    //        return url
-    //    } catch (error) {
-    //        console.error("Couldn't upload image: ", error)
-    //        return null
-    //     }
-    //}
+        try {
+            const fileName = 'images/${userId}/${Date.now()}.jpg'
+            const reference = storage().ref(`uploads/${userId}/${fileName}`)
 
-    // scrap bottom sheet idea? 
-    //const openBottomSheet = () => {
-    //    bottomSheetRef.current?.expand()
-    //}
+            // Upload the image to Firebase Storage
+            await reference.putFile(selectedImage);
+
+            // public url
+            const downloadURL = await reference.getDownloadURL();
+
+            // Store the URL and metadata in Firestore
+            await firestore().collection('images').add({
+                userId,
+                imageUrl: downloadURL,
+                uploadedAt: firestore.FieldValue.serverTimestamp(),
+            });
+            
+            console.log("Uploaded image:", downloadURL);
+            return downloadURL;
+        } catch (error) {
+            console.error("Couldn't upload image: ", error)
+            return null
+         }
+    }
 
     return (
 
